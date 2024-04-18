@@ -12,7 +12,10 @@ import { Item } from "./Item";
 
 export type ConditionBuilderProps = {
   conditions?: ConditionType[];
-  renderConditionField?: (fieldProp: ConditionType) => React.ReactNode;
+  renderConditionField?: (
+    fieldProp: ConditionType,
+    indexKey: string
+  ) => React.ReactNode;
 };
 
 export const ConditionBuilderInner: React.FC = memo(() => {
@@ -22,16 +25,24 @@ export const ConditionBuilderInner: React.FC = memo(() => {
       {state.conditions?.map((condition) => {
         if (condition.conjunction) {
           return (
-            <Group key={condition.key} data={condition} hoverAble={false} />
+            <Group
+              indexedKey={"0"}
+              key={condition.key}
+              data={condition}
+              hoverable={false}
+            />
           );
         }
-        return <Item key={condition.key} data={condition} />;
+        return <Item indexedKey={"0"} key={condition.key} data={condition} />;
       })}
     </div>
   );
 });
 
 export const ConditionBuilder: React.FC<ConditionBuilderProps> = memo(
+  // todo:
+  // 1. 添加forwardRef, 命令式更新
+
   (props) => {
     return (
       <ConditionBuilderProvider

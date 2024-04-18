@@ -13,8 +13,12 @@ function App() {
       }}
     >
       <ConditionBuilder
-        renderConditionField={(filedProps) => {
-          return <Tag>{filedProps.key}</Tag>;
+        renderConditionField={(filedProps, indexKey) => {
+          return (
+            <Tag>
+              {filedProps.key} 索引序号:{indexKey}
+            </Tag>
+          );
         }}
         conditions={[
           {

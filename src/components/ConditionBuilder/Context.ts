@@ -1,6 +1,7 @@
-import React, { useReducer, useState } from "react";
+import React, { useState } from "react";
 import constate from "constate";
 import { useMemoizedFn } from "ahooks";
+import { useImmerReducer } from "use-immer";
 
 export type ConditionType = {
   key: React.Key;
@@ -13,17 +14,22 @@ export type ConditionType = {
  */
 export type ConditionBuilderState = {
   conditions?: ConditionType[];
-  renderConditionField?: (fieldProp: ConditionType) => React.ReactNode;
+  renderConditionField?: (
+    fieldProp: ConditionType,
+    indexKey: string
+  ) => React.ReactNode;
 };
 
 /**
  * Reducer Action
  */
-type ConditionBuilderAction = {
-  type: "RESET";
-  payload?: ConditionBuilderState;
-};
-
+type ConditionBuilderAction =
+  // todo: 更新field数据
+  | { type: "RESET"; payload?: ConditionBuilderState }
+  | { type: "ADD_CONDITION"; payload: ConditionType }
+  | { type: "DELETE_CONDITION"; payload: ConditionType }
+  | { type: "ADD_CONDITION_GROUP"; payload: ConditionType }
+  | { type: "DELETE_CONDITION_GROUP"; payload: ConditionType };
 /**
  * Reducer Initialize Function
  * @param initialState
@@ -40,15 +46,15 @@ export function initState(initialState?: ConditionBuilderState) {
  * @returns
  */
 export function ConditionBuilderReducer(
-  state: ConditionBuilderState,
+  draftState: ConditionBuilderState,
   action: ConditionBuilderAction
 ) {
   console.log("🚀 ~ action:", action);
-  return state;
+  return draftState;
 }
-
+// initialState就是外部传进来的数据
 function useConditionBuilderHook(initialState?: ConditionBuilderState) {
-  const [state, dispatch] = useReducer(
+  const [state, dispatch] = useImmerReducer(
     ConditionBuilderReducer,
     initialState,
     initState

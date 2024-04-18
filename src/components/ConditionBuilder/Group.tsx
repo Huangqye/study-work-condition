@@ -16,6 +16,7 @@ import { uniqueId } from "lodash-es";
 export type GroupProps = {
   data?: ConditionType;
   hoverable?: boolean;
+  indexedKey: string;
 };
 
 const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
@@ -91,11 +92,14 @@ export const Group: React.FC<GroupProps> = memo((props) => {
       <Space direction={"vertical"} className={classNames(styles.content)}>
         {props.data?.children?.length ? (
           <>
-            {displayData?.map((item) => {
+            {displayData?.map((item, index) => {
+              const indexedKey = `${
+                props.indexedKey ? `${props.indexedKey}-` : ""
+              }${index}`;
               return item.conjunction ? (
-                <Group data={item} key={item.key} />
+                <Group indexedKey={indexedKey} data={item} key={item.key} />
               ) : (
-                <Item data={item} key={item.key} />
+                <Item indexedKey={indexedKey} data={item} key={item.key} />
               );
             })}
           </>

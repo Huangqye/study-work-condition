@@ -10,6 +10,7 @@ import { DeleteOutlined } from "@ant-design/icons";
  */
 export type ItemProps = {
   data: Omit<ConditionType, "conjunction" | "children">;
+  indexedKey: string;
 };
 
 /**
@@ -17,11 +18,11 @@ export type ItemProps = {
  * @description Item Component
  * @constructor
  */
-export const Item: React.FC<ItemProps> = memo(({ data }) => {
+export const Item: React.FC<ItemProps> = memo(({ data, indexedKey }) => {
   const renderField = useRenderField();
   return (
     <div className={classNames(styles.itemContainer)}>
-      {renderField?.(data)}
+      {renderField?.(data, indexedKey)}
       <DeleteOutlined style={{ cursor: "pointer", marginLeft: 20 }} />
     </div>
   );

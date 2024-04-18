@@ -1,7 +1,8 @@
 import React, { memo } from "react";
 import styles from "./index.module.less";
 import classNames from "classnames";
-import { ConditionType } from "./Context.ts";
+import { ConditionType, useRenderField } from "./Context.ts";
+import { DeleteOutlined } from "@ant-design/icons";
 
 /**
  * ItemProps
@@ -17,9 +18,11 @@ export type ItemProps = {
  * @constructor
  */
 export const Item: React.FC<ItemProps> = memo(({ data }) => {
+  const renderField = useRenderField();
   return (
     <div className={classNames(styles.itemContainer)}>
-      <span>{String(data.key)}</span>
+      {renderField?.(data)}
+      <DeleteOutlined style={{ cursor: "pointer", marginLeft: 20 }} />
     </div>
   );
 });

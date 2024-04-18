@@ -1,8 +1,8 @@
 import { memo } from "react";
 import {
-  ConditionBuilderContext,
+  ConditionBuilderProvider,
   ConditionType,
-  HoveringContext,
+  HoveringProvider,
   useConditionBuilderStore,
 } from "./Context";
 import styles from "./index.module.less";

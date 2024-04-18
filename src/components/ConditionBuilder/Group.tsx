@@ -4,7 +4,7 @@ import { EmptyItem, Item } from "./Item.tsx";
 import styles from "./index.module.less";
 import { Divider, Space } from "antd";
 import classNames from "classnames";
-import { useToggle } from "ahooks";
+import { useThrottleFn, useToggle } from "ahooks";
 import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 import { Actions } from "./Actions.tsx";
 import { uniqueId } from "lodash-es";
@@ -22,6 +22,10 @@ const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
   ({ id, hoverable, children }) => {
     const [hoveringId, setHoveringId] = useHoveringStore();
 
+    const setHoveringIdThrottle = useThrottleFn(setHoveringId, {
+      wait: 300,
+    });
+
     return (
       <div
         className={classNames(
@@ -33,7 +37,7 @@ const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
             ? undefined
             : (e) => {
                 e.stopPropagation();
-                setHoveringId(id);
+                if (hoveringId != id) setHoveringIdThrottle.run(id);
               }
         }
         onMouseLeave={

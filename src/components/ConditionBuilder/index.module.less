@@ -24,12 +24,13 @@
 
   > aside {
     position: relative;
-    flex-shrink: 0; // 不收缩
+    flex-shrink: 0;
     margin-right: 10px;
     margin-left: 10px;
+
     display: flex;
     align-items: center;
-    // 线
+
     &::before {
       position: absolute;
       left: 50%;
@@ -44,10 +45,12 @@
       &::before {
         background: @green-2;
       }
+
       > .conjunction span {
         background: @green-2;
         color: @green-7;
       }
+
       .toggle {
         background: @green-2;
         color: @green-7;
@@ -58,6 +61,7 @@
       &::before {
         background: @blue-2;
       }
+
       > .conjunction span {
         background: @blue-2;
         color: @blue-7;
@@ -70,7 +74,7 @@
     }
   }
 }
-// 箭头
+
 .toggle {
   top: 0;
   position: absolute;
@@ -89,6 +93,7 @@
   margin: 0;
   font-size: 12px;
   color: @text-color-secondary;
+
   :global(.ant-divider-inner-text) {
     cursor: pointer;
     user-select: none;
@@ -98,6 +103,7 @@
 .conjunction {
   position: relative;
   cursor: pointer;
+
   > span {
     padding: 2px 4px;
     border-radius: @border-radius-base;
@@ -112,6 +118,19 @@
   border-radius: @border-radius-base;
   background: @background-color-light;
   color: @text-color-secondary;
+
+  // 垃圾桶
+  :global(.anticon) {
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 14px;
+  }
+
+  &:hover {
+    :global(.anticon) {
+      opacity: 1;
+    }
+  }
 }
 
 .content {

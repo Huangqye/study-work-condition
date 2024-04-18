@@ -1,5 +1,6 @@
 import React, { useReducer, useState } from "react";
 import constate from "constate";
+import { useMemoizedFn } from "ahooks";
 
 export type ConditionType = {
   key: React.Key;
@@ -52,17 +53,30 @@ function useConditionBuilderHook(initialState?: ConditionBuilderState) {
     initialState,
     initState
   );
+
+  const renderField = useMemoizedFn(
+    initialState?.renderConditionField ?? (() => {})
+  );
+
   return {
     state,
     dispatch,
+    renderField: initialState?.renderConditionField ? renderField : undefined,
   };
 }
 
-export const [ConditionBuilderContext, useConditionBuilderStore] = constate(
-  useConditionBuilderHook
+export const [
+  ConditionBuilderProvider,
+  useConditionBuilderStore,
+  useRenderField,
+] = constate(
+  useConditionBuilderHook,
+  (value) => value,
+  (value) => value.renderField
 );
 
 function useHoveringHook() {
   return useState<React.Key>();
 }
-export const [HoveringContext, useHoveringStore] = constate(useHoveringHook);
+
+export const [HoveringProvider, useHoveringStore] = constate(useHoveringHook);

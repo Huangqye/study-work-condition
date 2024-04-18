@@ -1,0 +1,110 @@
+@import url("antd/es/style/variable");
+
+.container {
+  display: flex;
+  width: 100%;
+  padding: 10px;
+  border: solid 1px @border-color-base;
+  border-radius: 2px;
+}
+
+.groupContainer {
+  display: flex;
+  width: 100%;
+  border-radius: @border-radius-base;
+  transition: all 0.3s;
+
+  > aside {
+    position: relative;
+    flex-shrink: 0; // 不收缩
+    margin-right: 10px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    // 线
+    &::before {
+      position: absolute;
+      left: 50%;
+      margin-left: -1px;
+      width: 2px;
+      height: 100%;
+      background: @border-radius-base;
+      content: "";
+    }
+
+    &.or {
+      &::before {
+        background: @green-2;
+      }
+      > .conjunction span {
+        background: @green-2;
+        color: @green-7;
+      }
+      .toggle {
+        background: @green-2;
+        color: @green-7;
+      }
+    }
+
+    &.and {
+      &::before {
+        background: @blue-2;
+      }
+      > .conjunction span {
+        background: @blue-2;
+        color: @blue-7;
+      }
+
+      .toggle {
+        background: @blue-2;
+        color: @blue-7;
+      }
+    }
+  }
+}
+// 箭头
+.toggle {
+  top: 0;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  background: @background-color-light;
+  user-select: none;
+}
+
+:global(.ant-divider-horizontal.ant-divider-with-text).divider {
+  margin: 0;
+  font-size: 12px;
+  color: @text-color-secondary;
+  :global(.ant-divider-inner-text) {
+    cursor: pointer;
+    user-select: none;
+  }
+}
+
+.conjunction {
+  position: relative;
+
+  > span {
+    padding: 2px 4px;
+    border-radius: @border-radius-base;
+    font-size: 14px;
+    background: @border-color-base;
+  }
+}
+
+.itemContainer {
+  min-height: 50px;
+  padding: @padding-md;
+  border-radius: @border-radius-base;
+  background: @background-color-light;
+  color: @text-color-secondary;
+}
+
+.actions {
+}

@@ -1,11 +1,13 @@
-import { PropsWithChildren, memo, useMemo, useState } from "react";
-import { ConditionType } from "./Context";
-import { useToggle } from "ahooks";
-import classNames from "classnames";
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import React, { memo, useMemo } from "react";
+import { ConditionType, useHoveringStore } from "./Context.ts";
+import { EmptyItem, Item } from "./Item.tsx";
 import styles from "./index.module.less";
-import { Button, Divider, Space } from "antd";
-import { EmptyItem, Item } from "./Item";
+import { Divider, Space } from "antd";
+import classNames from "classnames";
+import { useToggle } from "ahooks";
+import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
+import { Actions } from "./Actions.tsx";
+import { uniqueId } from "lodash-es";
 
 /**
  * GroupProps
@@ -13,25 +15,35 @@ import { EmptyItem, Item } from "./Item";
  */
 export type GroupProps = {
   data?: ConditionType;
+  hoverable?: boolean;
 };
 
-const GroupContainer: React.FC<PropsWithChildren<any>> = memo(
-  ({ children }) => {
-    const [hovering, setHovering] = useState(false);
+const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
+  ({ id, hoverable, children }) => {
+    const [hoveringId, setHoveringId] = useHoveringStore();
+
     return (
       <div
         className={classNames(
           styles.groupContainer,
-          hovering && styles.hovering
+          hoverable && hoveringId === id && styles.hovering
         )}
-        onMouseEnter={(e) => {
-          e.stopPropagation();
-          setHovering(true);
-        }}
-        onMouseLeave={(e) => {
-          e.stopPropagation();
-          setHovering(false);
-        }}
+        onMouseOver={
+          !hoverable
+            ? undefined
+            : (e) => {
+                e.stopPropagation();
+                setHoveringId(id);
+              }
+        }
+        onMouseLeave={
+          !hoverable
+            ? undefined
+            : (e) => {
+                e.stopPropagation();
+                setHoveringId(undefined);
+              }
+        }
       >
         {children}
       </div>
@@ -47,7 +59,6 @@ const GroupContainer: React.FC<PropsWithChildren<any>> = memo(
 export const Group: React.FC<GroupProps> = memo((props) => {
   const [toggleState, { toggle, set }] = useToggle(true);
 
-  //   展示全部还是一个
   const displayData = useMemo(() => {
     return toggleState
       ? props.data?.children
@@ -55,13 +66,16 @@ export const Group: React.FC<GroupProps> = memo((props) => {
   }, [props.data?.children, toggleState]);
 
   return (
-    <GroupContainer>
+    <GroupContainer
+      id={props.data?.key || uniqueId()}
+      hoverable={props.hoverable ?? true}
+    >
       <aside
         className={classNames(
           props.data?.conjunction === "or" ? styles.or : styles.and
         )}
       >
-        <div className={classNames(styles.conjunction)}>
+        <div className={classNames(styles.conjunction)} title={"点击切换"}>
           {props.data?.conjunction === "or" ? <span>或</span> : <span>且</span>}
         </div>
         {(props.data?.children?.length ?? 0) > 1 && (
@@ -70,16 +84,16 @@ export const Group: React.FC<GroupProps> = memo((props) => {
           </div>
         )}
       </aside>
-      <Space direction={"vertical"} style={{ flex: 1 }}>
+      <Space direction={"vertical"} className={classNames(styles.content)}>
         {props.data?.children?.length ? (
           <>
-            {displayData?.map((item) =>
-              item.conjunction ? (
+            {displayData?.map((item) => {
+              return item.conjunction ? (
                 <Group data={item} key={item.key} />
               ) : (
                 <Item data={item} key={item.key} />
-              )
-            )}
+              );
+            })}
           </>
         ) : (
           <EmptyItem />
@@ -92,22 +106,7 @@ export const Group: React.FC<GroupProps> = memo((props) => {
           </Divider>
         )}
         {/* 操作按钮 */}
-        {toggleState && (
-          <Space
-            className={classNames(styles.actions)}
-            style={{ justifyContent: "flex-start" }}
-          >
-            <Button type={"link"} size={"small"}>
-              添加条件
-            </Button>
-            <Button type={"link"} size={"small"}>
-              添加条件组
-            </Button>
-            <Button type={"link"} size={"small"}>
-              删除组
-            </Button>
-          </Space>
-        )}
+        {toggleState && props.data && <Actions {...props.data} />}
       </Space>
     </GroupContainer>
   );

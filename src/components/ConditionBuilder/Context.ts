@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useState } from "react";
 import constate from "constate";
 
 export type ConditionType = {
@@ -12,6 +12,7 @@ export type ConditionType = {
  */
 export type ConditionBuilderState = {
   conditions?: ConditionType[];
+  renderConditionField?: (fieldProp: ConditionType) => React.ReactNode;
 };
 
 /**
@@ -45,7 +46,7 @@ export function ConditionBuilderReducer(
   return state;
 }
 
-function useHook(initialState?: ConditionBuilderState) {
+function useConditionBuilderHook(initialState?: ConditionBuilderState) {
   const [state, dispatch] = useReducer(
     ConditionBuilderReducer,
     initialState,
@@ -57,5 +58,11 @@ function useHook(initialState?: ConditionBuilderState) {
   };
 }
 
-export const [ConditionBuilderContext, useConditionBuilderStore] =
-  constate(useHook);
+export const [ConditionBuilderContext, useConditionBuilderStore] = constate(
+  useConditionBuilderHook
+);
+
+function useHoveringHook() {
+  return useState<React.Key>();
+}
+export const [HoveringContext, useHoveringStore] = constate(useHoveringHook);

@@ -2,6 +2,7 @@ import { memo } from "react";
 import {
   ConditionBuilderContext,
   ConditionType,
+  HoveringContext,
   useConditionBuilderStore,
 } from "./Context";
 import styles from "./index.module.less";
@@ -11,6 +12,7 @@ import { Item } from "./Item";
 
 export type ConditionBuilderProps = {
   conditions?: ConditionType[];
+  renderConditionField?: (fieldProp: ConditionType) => React.ReactNode;
 };
 
 export const ConditionBuilderInner: React.FC = memo(() => {
@@ -19,7 +21,9 @@ export const ConditionBuilderInner: React.FC = memo(() => {
     <div className={classNames(styles.container)}>
       {state.conditions?.map((condition) => {
         if (condition.conjunction) {
-          return <Group key={condition.key} data={condition} />;
+          return (
+            <Group key={condition.key} data={condition} hoverAble={false} />
+          );
         }
         return <Item key={condition.key} data={condition} />;
       })}
@@ -30,9 +34,14 @@ export const ConditionBuilderInner: React.FC = memo(() => {
 export const ConditionBuilder: React.FC<ConditionBuilderProps> = memo(
   (props) => {
     return (
-      <ConditionBuilderContext conditions={props.conditions}>
-        <ConditionBuilderInner />
-      </ConditionBuilderContext>
+      <ConditionBuilderProvider
+        conditions={props.conditions}
+        renderConditionField={props.renderConditionField}
+      >
+        <HoveringProvider>
+          <ConditionBuilderInner />
+        </HoveringProvider>
+      </ConditionBuilderProvider>
     );
   }
 );

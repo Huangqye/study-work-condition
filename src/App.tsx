@@ -1,6 +1,7 @@
 import { uniqueId } from "lodash-es";
 import "./App.css";
 import { ConditionBuilder } from "./components/ConditionBuilder";
+import { Tag } from "antd";
 
 function App() {
   return (
@@ -12,6 +13,9 @@ function App() {
       }}
     >
       <ConditionBuilder
+        renderConditionField={(filedProps) => {
+          return <Tag>{filedProps.key}</Tag>;
+        }}
         conditions={[
           {
             key: uniqueId(),

@@ -13,6 +13,14 @@
   width: 100%;
   border-radius: @border-radius-base;
   transition: all 0.3s;
+  outline: white solid 0;
+
+  &.hovering {
+    position: relative;
+    box-shadow: @shadow-2;
+    z-index: 1;
+    outline: white solid 6px;
+  }
 
   > aside {
     position: relative;
@@ -89,7 +97,7 @@
 
 .conjunction {
   position: relative;
-
+  cursor: pointer;
   > span {
     padding: 2px 4px;
     border-radius: @border-radius-base;
@@ -104,6 +112,10 @@
   border-radius: @border-radius-base;
   background: @background-color-light;
   color: @text-color-secondary;
+}
+
+.content {
+  flex: 1;
 }
 
 .actions {

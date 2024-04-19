@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import styles from "./index.module.less";
 import classNames from "classnames";
-import { ConditionType, useRenderField } from "./Context.ts";
+import { ConditionType, useDispatch, useRenderField } from "./Context.ts";
 import { DeleteOutlined } from "@ant-design/icons";
 
 /**
@@ -20,10 +20,20 @@ export type ItemProps = {
  */
 export const Item: React.FC<ItemProps> = memo(({ data, indexedKey }) => {
   const renderField = useRenderField();
+  const dispatch = useDispatch();
+
   return (
     <div className={classNames(styles.itemContainer)}>
       {renderField?.(data, indexedKey)}
-      <DeleteOutlined style={{ cursor: "pointer", marginLeft: 20 }} />
+      <DeleteOutlined
+        style={{ cursor: "pointer", marginLeft: 20 }}
+        onClick={() =>
+          dispatch({
+            type: "DELETE_CONDITION",
+            payload: { ...data, indexedKey },
+          })
+        }
+      />
     </div>
   );
 });

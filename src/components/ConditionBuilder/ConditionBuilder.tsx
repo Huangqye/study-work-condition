@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import {
   ConditionBuilderProvider,
   ConditionType,
@@ -11,7 +11,9 @@ import { Group } from "./Group";
 import { Item } from "./Item";
 
 export type ConditionBuilderProps = {
+  // 条件 / 条件组
   conditions?: ConditionType[];
+  // 自定义条件  表单域/值域 渲染
   renderConditionField?: (
     fieldProp: ConditionType,
     indexKey: string
@@ -42,11 +44,14 @@ export const ConditionBuilderInner: React.FC = memo(() => {
 export const ConditionBuilder: React.FC<ConditionBuilderProps> = memo(
   // todo:
   // 1. 添加forwardRef, 命令式更新
-
   (props) => {
+    const conditions = useMemo(() => {
+      return props.conditions || [];
+    }, [props.conditions]);
+
     return (
       <ConditionBuilderProvider
-        conditions={props.conditions}
+        conditions={conditions}
         renderConditionField={props.renderConditionField}
       >
         <HoveringProvider>

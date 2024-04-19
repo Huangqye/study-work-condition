@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from "react";
-import { ConditionType, useHoveringStore } from "./Context.ts";
+import { ConditionType, useDispatch, useHoveringStore } from "./Context.ts";
 import { EmptyItem, Item } from "./Item.tsx";
 import styles from "./index.module.less";
 import { Divider, Space } from "antd";
@@ -14,9 +14,9 @@ import { uniqueId } from "lodash-es";
  * @description Group Props
  */
 export type GroupProps = {
-  data?: ConditionType;
-  hoverable?: boolean;
+  data: ConditionType;
   indexedKey: string;
+  hoverable?: boolean;
 };
 
 const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
@@ -63,6 +63,7 @@ const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
  */
 export const Group: React.FC<GroupProps> = memo((props) => {
   const [toggleState, { toggle, set }] = useToggle(true);
+  const dispatch = useDispatch();
 
   const displayData = useMemo(() => {
     return toggleState
@@ -80,7 +81,16 @@ export const Group: React.FC<GroupProps> = memo((props) => {
           props.data?.conjunction === "or" ? styles.or : styles.and
         )}
       >
-        <div className={classNames(styles.conjunction)} title={"点击切换"}>
+        <div
+          className={classNames(styles.conjunction)}
+          title={"点击切换"}
+          onClick={() =>
+            dispatch({
+              type: "CHANGE_CONJUNCTION",
+              payload: { ...props.data, indexedKey: props.indexedKey },
+            })
+          }
+        >
           {props.data?.conjunction === "or" ? <span>或</span> : <span>且</span>}
         </div>
         {(props.data?.children?.length ?? 0) > 1 && (
@@ -114,7 +124,9 @@ export const Group: React.FC<GroupProps> = memo((props) => {
           </Divider>
         )}
         {/* 操作按钮 */}
-        {toggleState && props.data && <Actions {...props.data} />}
+        {toggleState && props.data && (
+          <Actions indexedKey={props.indexedKey} {...props.data} />
+        )}
       </Space>
     </GroupContainer>
   );

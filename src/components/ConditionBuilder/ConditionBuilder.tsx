@@ -9,6 +9,7 @@ import styles from "./index.module.less";
 import classNames from "classnames";
 import { Group } from "./Group";
 import { Item } from "./Item";
+import { generateKey } from "./helper";
 
 export type ConditionBuilderProps = {
   // 条件 / 条件组
@@ -45,8 +46,16 @@ export const ConditionBuilder: React.FC<ConditionBuilderProps> = memo(
   // todo:
   // 1. 添加forwardRef, 命令式更新
   (props) => {
-    const conditions = useMemo(() => {
-      return props.conditions || [];
+    const conditions = useMemo<ConditionType[]>(() => {
+      return props.conditions?.length
+        ? props.conditions
+        : [
+            {
+              key: generateKey(),
+              conjunction: "and",
+              children: [],
+            },
+          ];
     }, [props.conditions]);
 
     return (

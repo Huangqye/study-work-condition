@@ -23,3 +23,5 @@ use-immer
 
 同时要有 Context 数据管理
 其中 ConditionType 表示数据定义
+
+indexedKey 索引规则 开头是 0 之后遍历 0-0

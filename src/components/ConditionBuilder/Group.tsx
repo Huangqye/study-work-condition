@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useState } from "react";
 import { ConditionType, useDispatch, useHoveringStore } from "./Context.ts";
 import { EmptyItem, Item } from "./Item.tsx";
 import styles from "./index.module.less";
@@ -56,6 +56,30 @@ const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
   }
 );
 
+const Conjunction: React.FC<GroupProps> = memo((props) => {
+  const dispatch = useDispatch();
+  const [animating, setAnimating] = useState(false);
+
+  return (
+    <div
+      className={classNames(styles.conjunction, animating && styles.play)}
+      onAnimationEnd={() => {
+        setAnimating(false);
+      }}
+      title={"点击切换"}
+      onClick={() => {
+        dispatch({
+          type: "CHANGE_CONJUNCTION",
+          payload: { ...props.data, indexedKey: props.indexedKey },
+        });
+        setAnimating(true);
+      }}
+    >
+      {props.data?.conjunction === "or" ? <span>或</span> : <span>且</span>}
+    </div>
+  );
+});
+
 /**
  * Group
  * @description Group Component
@@ -63,7 +87,6 @@ const GroupContainer: React.FC<{ id: React.Key; hoverable?: boolean }> = memo(
  */
 export const Group: React.FC<GroupProps> = memo((props) => {
   const [toggleState, { toggle, set }] = useToggle(true);
-  const dispatch = useDispatch();
 
   const displayData = useMemo(() => {
     return toggleState
@@ -81,18 +104,8 @@ export const Group: React.FC<GroupProps> = memo((props) => {
           props.data?.conjunction === "or" ? styles.or : styles.and
         )}
       >
-        <div
-          className={classNames(styles.conjunction)}
-          title={"点击切换"}
-          onClick={() =>
-            dispatch({
-              type: "CHANGE_CONJUNCTION",
-              payload: { ...props.data, indexedKey: props.indexedKey },
-            })
-          }
-        >
-          {props.data?.conjunction === "or" ? <span>或</span> : <span>且</span>}
-        </div>
+        <Conjunction {...props} />
+
         {(props.data?.children?.length ?? 0) > 1 && (
           <div className={styles.toggle} onClick={toggle}>
             {toggleState ? <ArrowDownOutlined /> : <ArrowUpOutlined />}
@@ -125,7 +138,7 @@ export const Group: React.FC<GroupProps> = memo((props) => {
         )}
         {/* 操作按钮 */}
         {toggleState && props.data && (
-          <Actions indexedKey={props.indexedKey} {...props.data} />
+          <Actions indexedKey={props.indexedKey} data={props.data} />
         )}
       </Space>
     </GroupContainer>

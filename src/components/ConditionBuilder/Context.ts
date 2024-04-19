@@ -1,8 +1,8 @@
-import React, { useState } from "react";
 import constate from "constate";
+import React, { useState } from "react";
 import { useMemoizedFn } from "ahooks";
 import { useImmerReducer } from "use-immer";
-import { uniqueId } from "lodash-es";
+import { generateKey } from "./helper.ts";
 
 export type ConditionType = {
   key: React.Key;
@@ -37,6 +37,7 @@ type ConditionBuilderAction =
   | { type: "DELETE_CONDITION"; payload: ConditionTypeWithIndexedKey }
   | { type: "ADD_CONDITION_GROUP"; payload: ConditionTypeWithIndexedKey }
   | { type: "DELETE_CONDITION_GROUP"; payload: ConditionTypeWithIndexedKey };
+
 /**
  * Reducer Initialize Function
  * @param initialState
@@ -50,9 +51,12 @@ function getSplitIndexedKeys(indexedKey: string) {
   return indexedKey.split("-").map((e) => parseInt(e, 10));
 }
 
-function getNode(conditions: ConditionType[], indexedKey: string) {
+function getNode(
+  conditions: ConditionType[],
+  indexedKey: string
+): ConditionType | undefined {
   const splitIndexedKeys = getSplitIndexedKeys(indexedKey);
-  let record: ConditionType = conditions[splitIndexedKeys[0]];
+  let record: ConditionType | undefined = conditions[splitIndexedKeys[0]];
   for (let i = 1, len = splitIndexedKeys.length; i < len; i++) {
     if (record.children) record = record.children?.[splitIndexedKeys[i]];
   }
@@ -72,46 +76,62 @@ export function ConditionBuilderReducer(
   switch (action.type) {
     case "ADD_CONDITION": {
       const record = getNode(draftState.conditions, action.payload.indexedKey);
-      record.children?.push({
-        key: uniqueId(),
+      record?.children?.push({
+        key: generateKey(),
       });
       break;
     }
-    case "ADD_CONDITION_GROUP":
-      return {
-        ...draftState,
-        // description: action.payload,
-      };
+    case "ADD_CONDITION_GROUP": {
+      const record = getNode(draftState.conditions, action.payload.indexedKey);
+      record?.children?.push({
+        key: generateKey(),
+        conjunction: "and",
+        children: [
+          {
+            key: generateKey(),
+          },
+        ],
+      });
       break;
+    }
     case "DELETE_CONDITION": {
-      const record = getNode(
+      const parent = getNode(
         draftState.conditions,
         action.payload.indexedKey.slice(0, action.payload.indexedKey.length - 2)
       );
       const key = action.payload.key;
-      record.children = record.children?.filter((item) => !(item.key === key));
+      if (parent)
+        parent.children = parent.children?.filter(
+          (item) => !(item.key === key)
+        );
       break;
     }
-    case "DELETE_CONDITION_GROUP":
-      return {
-        ...draftState,
-        // description: action.payload,
-      };
+    case "DELETE_CONDITION_GROUP": {
+      const parent = getNode(
+        draftState.conditions,
+        action.payload.indexedKey.slice(0, action.payload.indexedKey.length - 2)
+      );
+      const key = action.payload.key;
+      if (parent)
+        parent.children = parent.children?.filter(
+          (item) => !(item.key === key)
+        );
       break;
-    case "CHANGE_CONJUNCTION":
-      return {
-        ...draftState,
-        // description: action.payload,
-      };
+    }
+    case "CHANGE_CONJUNCTION": {
+      const record = getNode(draftState.conditions, action.payload.indexedKey);
+      if (record)
+        record.conjunction = record.conjunction === "and" ? "or" : "and";
       break;
+    }
     case "RESET":
-      // return initState(action.payload);
+      draftState = initState(action.payload);
       break;
     default:
       break;
   }
 }
-// initialState就是外部传进来的数据
+
 function useConditionBuilderHook(initialState?: ConditionBuilderState) {
   const [state, dispatch] = useImmerReducer(
     ConditionBuilderReducer,

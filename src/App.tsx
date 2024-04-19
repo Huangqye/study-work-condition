@@ -13,10 +13,10 @@ function App() {
       }}
     >
       <ConditionBuilder
-        renderConditionField={(filedProps, indexKey) => {
+        renderConditionField={(filedProps, indexedKey) => {
           return (
             <Tag>
-              {filedProps.key} 索引序号:{indexKey}
+              key: {filedProps.key} 索引序号：{indexedKey}
             </Tag>
           );
         }}
@@ -41,6 +41,12 @@ function App() {
                     children: [
                       {
                         key: uniqueId(),
+                        conjunction: "or",
+                        children: [
+                          {
+                            key: uniqueId(),
+                          },
+                        ],
                       },
                     ],
                   },
@@ -58,6 +64,12 @@ function App() {
                   },
                   {
                     key: uniqueId(),
+                    conjunction: "or",
+                    children: [
+                      {
+                        key: uniqueId(),
+                      },
+                    ],
                   },
                 ],
               },
